@@ -4,52 +4,49 @@ require_relative '../../config/environment'
 class ApplicationController < Sinatra::Base
 
   configure do
-    set :public_folder, 'public'
-    set :views, 'app/views'
-  end
+   set :public_folder, 'public'
+   set :views, 'app/views'
+ end
 
-  get '/' do
-  end
+get '/' do
+ end
 
-  get '/posts/new' do
-    erb :new
-  end
+ get '/articles/new' do
+   erb :new
+ end
 
-  post '/posts' do
-    Post.create(params)
-    redirect '/posts'
-  end
+ post '/articles' do
+   @article = Article.create(params)
+   redirect "/articles/#{@article.id}"
+ end
 
-  get '/posts' do
-    @posts = Post.all
-    erb :index
-  end
+ get '/articles' do
+   @articles = Article.all 
+   erb :index
+ end
 
-  get '/posts/:id' do
-    @post = Post.find(params["id"])
-    erb :show
-  end
+ get '/articles/:id' do
+   @article = Article.find(params["id"])
+   erb :show
+ end
 
-  get '/posts/:id/edit' do
-    @post = Post.find(params["id"])
-    erb :edit
-  end
+ get '/articles/:id/edit' do
+   @article = Article.find(params["id"])
+   erb :edit
+ end
 
-  patch '/posts/:id' do
-    id = params["id"]
-    new_params = {}
-    old_post = Post.find(id)
-    new_params[:name] = params["name"]
-    new_params[:content] = params["content"]
-    old_post.update(new_params)
+ patch '/articles/:id' do
+   @article = Article.find(params["id"])
+   @article.title = params["title"]
+   @article.content = params["content"]
+   @article.save
+   redirect "/articles/#{@article.id}"
+ end
 
-    redirect "/posts/#{id}"
-  end
-
-  delete '/posts/:id/delete' do
-    @post = Post.find(params["id"])
-    @post.destroy
-    erb :delete
-  end
+ delete '/articles/:id' do
+   @article = Article.find(params["id"])
+   @article.destroy
+   redirect '/articles'
+ end
 
 end
